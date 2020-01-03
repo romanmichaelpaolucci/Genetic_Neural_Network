@@ -78,8 +78,35 @@ def mutation(child_weights):
 
 # Crossover traits between two Genetic Neural Networks
 def dynamic_crossover(nn1, nn2):
-    # Currently being used for proprietary trading operation
-    pass
+    # Lists for respective weights
+    nn1_weights = []
+    nn2_weights = []
+    child_weights = []
+    # Get all weights from all layers in the first network
+    for layer in nn1.layers:
+        nn1_weights.append(layer.get_weights()[0])
+
+    # Get all weights from all layers in the second network
+    for layer in nn2.layers:
+        nn2_weights.append(layer.get_weights()[0])
+
+    # Iterate through all weights from all layers for crossover
+    for i in range(0, len(nn1_weights)):
+        # Get single point to split the matrix in parents based on # of cols
+        split = random.randint(0, np.shape(nn1_weights[i])[1]-1)
+        # Iterate through after a single point and set the remaing cols to nn_2
+        for j in range(split, np.shape(nn1_weights[i])[1]-1):
+            nn1_weights[i][:, j] = nn2_weights[i][:, j]
+
+        # After crossover add weights to child
+        child_weights.append(nn1_weights[i])
+
+    # Add a chance for mutation
+    mutation(child_weights)
+
+    # Create and return child object
+    child = GeneticNeuralNetwork(child_weights)
+    return child
 
 
 # Read Data
